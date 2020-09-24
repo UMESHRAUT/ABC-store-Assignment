@@ -38,9 +38,13 @@ router.get('/:id',(req,res)=>{
     const result=db.getProduct(product_id);
 
     result
-        .then(data=>res.json({data:data}))
-        .catch(err=>console.log(err));
+        .then(data=>res.send(data))
+        .catch(err=>res.status(404).json({error:"no data found"}))
 })
+
+// 
+
+
 
 // update product by id
 router.put('/',(req,res)=>{

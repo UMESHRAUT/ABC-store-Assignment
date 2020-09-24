@@ -316,22 +316,18 @@ class DataBaseService{
 
 
     async getProduct(product_id){
-        try {
             const products=await new Promise((resolve,reject)=>{
                 const query=`SELECT * FROM product where product_id=${product_id}`;
                 mySqlConnection.query(query,(err,results)=>{
-                    if(err){
-                        reject(new Error(err.message));
+                    if(err || results.data==undefined){
+                        reject(new Error("no data availabe"));
                     }
                     resolve(results);
                 })
             })
-            console.log(products);
             return products
-        } catch (error) {
-            console.log(error);
-        }
     }
+
 
     async updateProduct(product_id,product_name,product_count,category_category_id,brand_brand_id){
         try {
