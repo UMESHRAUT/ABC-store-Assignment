@@ -1,5 +1,24 @@
 const express=require('express')
 const router=express.Router();
+const redis=require('redis')
+
+
+const client=redis.createClient(6379);
+// middleware for cache
+function cache(req,res,next){
+    console.log("from cache");
+    const product_id=req.params.id;
+    console.log(product_id);
+    client.get(product_id,(err,data)=>{
+        if(err) throw err;
+
+        if(data!=null){
+            res.send(data)
+        }else{
+            next();
+        }
+    })
+}
 
 const database=require('../databaseHandler')
 
@@ -33,13 +52,20 @@ router.get('/',(req,res)=>{
 })
 
 // get prodyct by id
-router.get('/:id',(req,res)=>{
-    const product_id=req.params.id
-    const result=db.getProduct(product_id);
+router.get('/:id',cache,async(req,res)=>{
+    try {
+        const product_id=req.params.id
+        const result=await db.getProduct(product_id);
+        console.log(result[0]);
+        console.log("from hear");
+        client.set(product_id,3600,result[0])
+        res.send(result)
 
-    result
-        .then(data=>res.send(data))
-        .catch(err=>res.status(404).json({error:"no data found"}))
+    } catch (error) {
+        console.log(error);
+        res.status(404).json({error})
+    }
+
 })
 
 // 

@@ -319,7 +319,7 @@ class DataBaseService{
             const products=await new Promise((resolve,reject)=>{
                 const query=`SELECT * FROM product where product_id=${product_id}`;
                 mySqlConnection.query(query,(err,results)=>{
-                    if(err || results.data==undefined){
+                    if(err || results.length==0){
                         reject(new Error("no data availabe"));
                     }
                     resolve(results);
